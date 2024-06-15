@@ -177,3 +177,12 @@ export const defaultArticleState = {
 };
 
 export type ArticleStateType = typeof defaultArticleState;
+
+export type AppState = {
+	//тип выбранных опций
+	fontFamilyOption: OptionType;
+	fontSizeOption: OptionType;
+	fontColor: OptionType;
+	contentWidth: OptionType;
+	backgroundColor: OptionType;
+};
