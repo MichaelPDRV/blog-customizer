@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
 import { Text } from 'components/text';
+import { useClose } from 'src/hooks/useClose';
 import { Select } from 'components/select/Select';
 import { RadioGroup } from 'components/radio-group';
 import {
@@ -13,6 +14,7 @@ import {
 	fontColors,
 	backgroundColors,
 	contentWidthArr,
+	OptionType,
 } from 'src/constants/articleProps';
 import { Separator } from '../separator';
 import styles from './ArticleParamsForm.module.scss';
@@ -20,7 +22,15 @@ import styles from './ArticleParamsForm.module.scss';
 type ArticleParamsProps = {
 	title: string;
 	appState: AppState;
-	setAppState: any;
+	setAppState: React.Dispatch<
+		React.SetStateAction<{
+			fontFamilyOption: OptionType;
+			fontColor: OptionType;
+			backgroundColor: OptionType;
+			contentWidth: OptionType;
+			fontSizeOption: OptionType;
+		}>
+	>;
 };
 
 export const ArticleParamsForm = ({
@@ -29,40 +39,34 @@ export const ArticleParamsForm = ({
 	appState,
 }: ArticleParamsProps) => {
 	const rootRef = useRef(null);
-	const [isOpen, setIsOpen] = useState(false);
-	const className = clsx(styles.container, isOpen && styles.container_open);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const className = clsx(styles.container, isMenuOpen && styles.container_open);
 
-	const submitClick = (e: SyntheticEvent) => {
+	useClose({
+		isOpen: isMenuOpen,
+		onClose: () => setIsMenuOpen(false),
+		rootRef: rootRef,
+	});
+
+	const submitClick = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setAppState(formState);
+		setIsMenuOpen(false);
 	};
 
 	const resetClick = () => {
-		setAppState(formState);
+		setFormState(defaultArticleState);
+		setAppState(defaultArticleState);
+		setIsMenuOpen(false);
 	};
-
-	const handleOutsideClick = (event: MouseEvent) => {
-		const test =
-			rootRef.current && event.composedPath().includes(rootRef.current);
-		if (event.target != rootRef.current && !test) {
-			setIsOpen(false);
-		}
-	};
-
-	useEffect(() => {
-		document.addEventListener('click', handleOutsideClick);
-
-		return () => {
-			document.removeEventListener('click', handleOutsideClick);
-		};
-	}, []);
 
 	const [formState, setFormState] = useState(appState);
 	useEffect(() => setFormState(appState), [appState]);
 	return (
 		<div ref={rootRef}>
 			<ArrowButton
-				onClick={() => setIsOpen((previous: boolean) => !previous)}
-				isOpen={isOpen}
+				onClick={() => setIsMenuOpen((previous: boolean) => !previous)}
+				isMenuOpen={isMenuOpen}
 			/>
 			<aside className={className}>
 				<form
@@ -113,16 +117,8 @@ export const ArticleParamsForm = ({
 						}
 					/>
 					<div className={styles.bottomContainer}>
-						<Button
-							title='Сбросить'
-							type='reset'
-							onClick={() => setFormState(defaultArticleState)}
-						/>
-						<Button
-							title='Применить'
-							type='submit'
-							onClick={() => setAppState(formState)}
-						/>
+						<Button title='Сбросить' type='reset' />
+						<Button title='Применить' type='submit' />
 					</div>
 				</form>
 			</aside>

@@ -6,16 +6,19 @@ import { clsx } from 'clsx';
 
 type ArrowButtonProps = {
 	onClick: () => void;
-	isOpen: boolean;
+	isMenuOpen: boolean;
 };
 
 /** Функция для обработки открытия/закрытия формы */
 
 export const ArrowButton = (props: ArrowButtonProps) => {
-	const classNameArrow = clsx(styles.arrow, props.isOpen && styles.arrow_open);
+	const classNameArrow = clsx(
+		styles.arrow,
+		props.isMenuOpen && styles.arrow_open
+	);
 	const classNameButton = clsx(
 		styles.container,
-		props.isOpen && styles.container_open
+		props.isMenuOpen && styles.container_open
 	);
 	return (
 		/* Не забываем указаывать role и aria-label атрибуты для интерактивных элементов */
